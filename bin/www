@@ -1,0 +1,231 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('MobileAcces:server');
+var http = require('http');
+var models = require('../models')
+
+
+
+
+
+//models.sequelize.sync({ force: true }).then(function () { // in case we need to reload database config
+//models.sequelize.sync().then(function () {
+//console.log('tables created');
+// models.user.create({first_name:'wejd',last_name:'daghfous',password:"U2FsdGVkX19DlHajtMD2TvJlIZaMTPU0qavy2lVKjxw=",email:'wejd.daghfous@esprit.tn',address:'13 rue de monastir, sidi achour', code_postal:'8000', city:'nabeul', country:'tunisia',flag:1});
+//});
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '5050');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+
+/*var io=require('socket.io').listen(server);
+var clients=[]
+
+io.sockets.on('connection',function(socket){
+  console.log('Un clisnt est connecte',socket.id)
+  clients.push(socket);
+  socket.on('data', function (data) {
+        console.log(data.toString());
+  });
+  
+  socket.on('disconnect',function(){
+    var index = clients.indexOf(socket);
+    if(index != -1 ){
+	clients.splice(index,1);
+        console.log('client disconnected');
+     }
+
+
+  })
+
+})
+
+*/
+var reqhttp = require('request')
+var NetKeepAlive = require('net-keepalive')
+
+var clients = []
+var lastSelectedClient = []
+require('net').createServer(function(socket) {
+    console.log("+++++++++++connected");
+
+    socket.setKeepAlive(true, 10000)
+    NetKeepAlive.setKeepAliveInterval(socket, 4000)
+    NetKeepAlive.setKeepAliveProbes(socket, 1)
+
+
+    socket.on('data', function(data) {
+        socket.name = data.toString();
+        console.log('is this socket is selected previously ', lastSelectedClient.indexOf(socket.name))
+        if (lastSelectedClient.indexOf(socket.name) < 0) {
+            socket.linked = false
+            reqhttp.post('https://oauth20.herokuapp.com/api/updateSpeakerByNumSerie', { form: { linked: false, num_serie: socket.name } }, function(result) {
+                console.log('###########updateSpeakerByNumSerie to false')
+            })
+            clients.push(socket);
+            console.log('+++++++++connected device NAme', data.toString())
+            socket.write('connected to server')
+
+        } else {
+            lastSelectedClient.forEach(function(element) {
+                if (socket.name == element) {
+                    socket.linked = true
+                    console.log('already selected socket reconnected')
+                    reqhttp.post('https://oauth20.herokuapp.com/api/updateSpeakerByNumSerie', { form: { linked: true, num_serie: socket.name } }, function(result) {
+                        console.log('###########updateSpeakerByNumSerie to true')
+
+                    })
+                    clients.push(socket);
+                    console.log('+++++++++connected device NAme', data.toString())
+                    socket.write('connected to server')
+                }
+            })
+        }
+
+
+
+
+
+
+    });
+
+    socket.on('error', function(e) {
+        if (e.code == 'ETIMEDOUT') {
+            var index = clients.indexOf(socket);
+            if (index != -1) {
+                clients.splice(index, 1);
+                console.log('--------client close', socket.name);
+                reqhttp.post('https://oauth20.herokuapp.com/api/updateSpeakerByNumSerie', { form: { linked: false, num_serie: socket.name } }, function(result) {
+                    console.log('###########updateSpeakerByNumSerie')
+                })
+            }
+
+        }
+    })
+
+    socket.on('close', function() {
+        var index = clients.indexOf(socket);
+        if (index != -1) {
+            clients.splice(index, 1);
+            reqhttp.post('https://oauth20.herokuapp.com/api/updateSpeakerByNumSerie', { form: { linked: false, num_serie: socket.name } }, function(result) {
+                console.log('###########updateSpeakerByNumSerie')
+            })
+            console.log('--------client close', socket.name);
+        }
+    });
+
+    var sendSocketToSpeaker = function(name, action, callback) {
+        console.log('###########send', action, ' to ', name)
+        if (clients.length == 0) {
+
+            callback(false)
+        }
+
+        clients.forEach(function(client) {
+
+            if (client.name == name) {
+
+                callback(client.write(action))
+            }
+
+        })
+
+    }
+
+
+    exports.sendSocketToSpeaker = sendSocketToSpeaker;
+
+
+}).listen(7070, function() {
+
+    console.log('listen on port 7070')
+});
+
+
+
+
+exports.clients = clients;
+exports.lastSelectedClient = lastSelectedClient;
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+    var port = parseInt(val, 10);
+
+    if (isNaN(port)) {
+        // named pipe
+        return val;
+    }
+
+    if (port >= 0) {
+        // port number
+        return port;
+    }
+
+    return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
+
+    var bind = typeof port === 'string' ?
+        'Pipe ' + port :
+        'Port ' + port;
+
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+    var addr = server.address();
+    console.log('server http listening on 5050')
+    var bind = typeof addr === 'string' ?
+        'pipe ' + addr :
+        'port ' + addr.port;
+    debug('Listening on ' + bind);
+}
