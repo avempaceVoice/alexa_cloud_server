@@ -6,8 +6,8 @@ var list = ['living room', 'arpegio']
 var fn = require('../bin/www')
 var io = require('socket.io');
 var reqhttp = require('request')
-
-/* GET home page. */
+var serverUrl = 'https://voiceconnect.ovh'
+    /* GET home page. */
 router.get('/', securityCheck, function(req, res, next) {
     var tab = []
     fn.clients.forEach(function(soc) {
@@ -22,7 +22,7 @@ router.post('/unlinkspeaker', function(req, res, next) {
     fn.clients.forEach(function(soc) {
         if (soc.name == req.body.key) {
             console.log('theire is a socket named as requested', soc.name)
-            reqhttp.post('https://oauth20.herokuapp.com/api/updateSpeakerByNumSerie', { form: { linked: false, num_serie: soc.name } }, function(result) {
+            reqhttp.post(serverUrl + '/api/updateSpeakerByNumSerie', { form: { linked: false, num_serie: soc.name } }, function(result) {
                 console.log(result)
             })
             soc.linked = false
@@ -50,7 +50,7 @@ router.post('/', securityCheck, function(req, res, next) {
         fn.clients.forEach(function(soc) {
             if (soc.name == req.body.key) {
                 console.log('theire is a socket named as requested', soc.name)
-                reqhttp.post('https://oauth20.herokuapp.com/api/updateSpeakerByNumSerie', { form: { linked: true, num_serie: soc.name } }, function(result) {
+                reqhttp.post(serverUrl + '/api/updateSpeakerByNumSerie', { form: { linked: true, num_serie: soc.name } }, function(result) {
                     console.log(result)
                 })
                 soc.linked = true
