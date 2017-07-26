@@ -63,7 +63,7 @@ io.sockets.on('connection',function(socket){
 })
 
 */
-var serverUrl = 'https://voiceconnect.ovh'
+var serverUrl = 'https://voiceconnect.ovh/ask'
 var reqhttp = require('request')
 var NetKeepAlive = require('net-keepalive')
 
