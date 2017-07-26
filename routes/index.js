@@ -22,7 +22,7 @@ router.post('/unlinkspeaker', function(req, res, next) {
     fn.clients.forEach(function(soc) {
         if (soc.name == req.body.key) {
             console.log('theire is a socket named as requested', soc.name)
-            reqhttp.post(serverUrl + '/api/updateSpeakerByNumSerie', { form: { linked: false, num_serie: soc.name } }, function(result) {
+            reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: soc.name } }, function(result) {
                 console.log(result)
             })
             soc.linked = false
@@ -50,7 +50,7 @@ router.post('/', securityCheck, function(req, res, next) {
         fn.clients.forEach(function(soc) {
             if (soc.name == req.body.key) {
                 console.log('theire is a socket named as requested', soc.name)
-                reqhttp.post(serverUrl + '/api/updateSpeakerByNumSerie', { form: { linked: true, num_serie: soc.name } }, function(result) {
+                reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: true, num_serie: soc.name } }, function(result) {
                     console.log(result)
                 })
                 soc.linked = true

@@ -82,7 +82,7 @@ require('net').createServer(function(socket) {
         console.log('is this socket is selected previously ', lastSelectedClient.indexOf(socket.name))
         if (lastSelectedClient.indexOf(socket.name) < 0) {
             socket.linked = false
-            reqhttp.post(serverUrl + '/api/updateSpeakerByNumSerie', { form: { linked: false, num_serie: socket.name } }, function(result) {
+            reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: socket.name } }, function(result) {
                 console.log('###########updateSpeakerByNumSerie to false')
             })
             clients.push(socket);
@@ -94,7 +94,7 @@ require('net').createServer(function(socket) {
                 if (socket.name == element) {
                     socket.linked = true
                     console.log('already selected socket reconnected')
-                    reqhttp.post(serverUrl + '/api/updateSpeakerByNumSerie', { form: { linked: true, num_serie: socket.name } }, function(result) {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: true, num_serie: socket.name } }, function(result) {
                         console.log('###########updateSpeakerByNumSerie to true')
 
                     })
@@ -118,7 +118,7 @@ require('net').createServer(function(socket) {
             if (index != -1) {
                 clients.splice(index, 1);
                 console.log('--------client close', socket.name);
-                reqhttp.post(serverUrl + '/api/updateSpeakerByNumSerie', { form: { linked: false, num_serie: socket.name } }, function(result) {
+                reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: socket.name } }, function(result) {
                     console.log('###########updateSpeakerByNumSerie')
                 })
             }
@@ -130,7 +130,7 @@ require('net').createServer(function(socket) {
         var index = clients.indexOf(socket);
         if (index != -1) {
             clients.splice(index, 1);
-            reqhttp.post(serverUrl + '/api/updateSpeakerByNumSerie', { form: { linked: false, num_serie: socket.name } }, function(result) {
+            reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: socket.name } }, function(result) {
                 console.log('###########updateSpeakerByNumSerie')
             })
             console.log('--------client close', socket.name);
