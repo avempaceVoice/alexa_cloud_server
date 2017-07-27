@@ -8,6 +8,8 @@ var io = require('socket.io');
 var reqhttp = require('request')
 var serverUrl = 'https://voiceconnect.ovh/ask'
     /* GET home page. */
+
+/* GET home page. */
 router.get('/', securityCheck, function(req, res, next) {
     var tab = []
     fn.clients.forEach(function(soc) {
@@ -18,12 +20,39 @@ router.get('/', securityCheck, function(req, res, next) {
 
 });
 
+router.get('/getAllSocketConnected', function(req, res, next) {
+    console.log('getAllSocketConnected')
+    sockService.getAllsocket(function(listSocket) {
+        res.send(listSocket)
+    })
+})
+
+router.post('/getsocketByNumSerie', function(req, res, next) {
+    console.log('req.body.name ', req.body.name)
+    sockService.getsocketByNumSerie(req.body.key, req.body.name, function(socket) {
+        if (socket != false) {
+            console.log('socket.socket.length ' + socket.socket.length)
+            if (socket.socket.length != 0) {
+                res.send(socket)
+            } else {
+                res.send(false)
+            }
+
+        } else {
+            res.send(false)
+        }
+    })
+})
+
 router.post('/unlinkspeaker', function(req, res, next) {
     fn.clients.forEach(function(soc) {
         if (soc.name == req.body.key) {
-            console.log('theire is a socket named as requested', soc.name)
+            console.log('unlink socket', soc.name)
             reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: soc.name } }, function(result) {
                 console.log(result)
+            })
+            sockService.updatesocketByNumSerie(soc.name, false, function(updatedSocked) {
+                console.log('update sockert')
             })
             soc.linked = false
             var index = fn.lastSelectedClient.indexOf(soc.name)
@@ -52,6 +81,9 @@ router.post('/', securityCheck, function(req, res, next) {
                 console.log('theire is a socket named as requested', soc.name)
                 reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: true, num_serie: soc.name } }, function(result) {
                     console.log(result)
+                })
+                sockService.updatesocketByNumSerie(soc.name, true, function(updatedSocked) {
+                    console.log('update sockert', updatedSocked)
                 })
                 soc.linked = true
                 fn.lastSelectedClient.push(soc.name)
@@ -151,6 +183,7 @@ router.post('/linktoanyone', securityCheck, function(req, res, next) {
         res.send('error')
     } else {
         console.log('inside if theire is a client')
+
         fn.clients[0].linked = true
         res.send(fn.clients[0].name)
     }
@@ -163,8 +196,8 @@ router.post('/linktoanyone', securityCheck, function(req, res, next) {
 router.post('/playnext', securityCheck, function(req, res, next) {
     console.log('req.body.key', req.body.key)
 
-    if (!req.body.key) {
-
+    if (req.body.key.length == 0) {
+        console.log('iside if section play next function ', req.body.key)
 
         fn.clients.forEach(function(soc) { // browse all speaker connected
 
@@ -181,9 +214,11 @@ router.post('/playnext', securityCheck, function(req, res, next) {
 
 
                         res.send({ status: 'ok' })
+                        res.end()
                     } else {
 
                         res.send({ status: 'no' })
+                        res.end()
                     }
 
 
@@ -195,20 +230,36 @@ router.post('/playnext', securityCheck, function(req, res, next) {
 
         res.send({ status: 'no' })
 
+        res.end()
 
 
 
     } else {
         if (fn.clients.length == 0) {
+            console.log('iside else if section play next function ', req.body.key)
             res.send({ status: 'no' })
+            res.end()
         } else {
+
+
+
             fn.sendSocketToSpeaker(req.body.key, 'play_next', function(result) {
+                console.log('result after try to send play next ', result)
                 if (result != false) {
 
                     res.send({ status: 'ok' })
+                    res.end()
                 } else {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
+                        console.log(result)
+                    })
+                    reqhttp.post(serverUrl + '/getSpeakerByNumSerie', { form: { num_serie: req.body.key } }, function(result) {
+                        console.log("----------------------------------------- " + result)
+                        res.send({ status: 'no' })
+                        res.end()
+                    })
 
-                    res.send({ status: 'no' })
+
                 }
 
 
@@ -259,6 +310,9 @@ router.post('/playprevious', securityCheck, function(req, res, next) {
                 if (result != false) {
                     res.send({ status: 'ok' })
                 } else {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
+                        console.log(result)
+                    })
                     res.send({ status: 'no' })
                 }
 
@@ -303,6 +357,9 @@ router.post('/playtrack', securityCheck, function(req, res, next) {
                 if (result != false) {
                     res.send({ status: 'ok' })
                 } else {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
+                        console.log(result)
+                    })
                     res.send({ status: 'no' })
                 }
 
@@ -350,6 +407,9 @@ router.post('/increasevolume', securityCheck, function(req, res, next) {
                 if (result != false) {
                     res.send({ status: 'ok' })
                 } else {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
+                        console.log(result)
+                    })
                     res.send({ status: 'no' })
                 }
 
@@ -405,6 +465,9 @@ router.post('/incrvolume', securityCheck, function(req, res, next) {
                     if (result != false) {
                         res.send({ status: 'ok' })
                     } else {
+                        reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
+                            console.log(result)
+                        })
                         res.send({ status: 'no' })
                     }
 
@@ -453,6 +516,9 @@ router.post('/decreasevolume', securityCheck, function(req, res, next) {
                 if (result != false) {
                     res.send({ status: 'ok' })
                 } else {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
+                        console.log(result)
+                    })
                     res.send({ status: 'no' })
                 }
 
@@ -499,6 +565,9 @@ router.post('/decrevolume', securityCheck, function(req, res, next) {
                 if (result != false) {
                     res.send({ status: 'ok' })
                 } else {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
+                        console.log(result)
+                    })
                     res.send({ status: 'no' })
                 }
 
@@ -545,6 +614,9 @@ router.post('/pause', securityCheck, function(req, res, next) {
                 if (result != false) {
                     res.send({ status: 'ok' })
                 } else {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
+                        console.log(result)
+                    })
                     res.send({ status: 'no' })
                 }
 
@@ -553,6 +625,54 @@ router.post('/pause', securityCheck, function(req, res, next) {
         }
 
     }
+
+
+})
+
+
+
+router.post('/whatisplaying', securityCheck, function(req, res, next) {
+    console.log('req.body.key', req.body.key)
+    res.send('hello by mariah carrey')
+        /*  if (!req.body.key) {
+
+
+              fn.clients.forEach(function(soc) {
+
+
+                  if (soc.linked == true) {
+
+                      fn.sendSocketToSpeaker(soc.name, 'whatisplaying', function(result) {
+                          if (result != false) {
+                              res.send(result)
+                          } else {
+                              res.send('nothing')
+                          }
+
+
+                      })
+
+                  }
+
+              })
+              res.send({ status: 'no' })
+
+          } else {
+              if (fn.clients.length == 0) {
+                  res.send({ status: 'no' })
+              } else {
+                  fn.sendSocketToSpeaker(req.body.key, 'whatisplaying', function(result) {
+                      if (result != false) {
+                          res.send(result)
+                      } else {
+                          res.send('nothing')
+                      }
+
+
+                  })
+              }
+
+          }*/
 
 
 })

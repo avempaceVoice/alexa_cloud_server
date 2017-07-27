@@ -8,16 +8,17 @@ var app = require('../app');
 var debug = require('debug')('MobileAcces:server');
 var http = require('http');
 var models = require('../models')
+var sockService = require('../services/socketservice')
 
+var shortid = require('shortid');
 
+var serverUrl = 'https://voiceconnect.ovh/ask'
 
+models.sequelize.sync({ force: true }).then(function() { // in case we need to reload database config
+    //models.sequelize.sync().then(function () {
+    console.log('tables created');
+});
 
-
-//models.sequelize.sync({ force: true }).then(function () { // in case we need to reload database config
-//models.sequelize.sync().then(function () {
-//console.log('tables created');
-// models.user.create({first_name:'wejd',last_name:'daghfous',password:"U2FsdGVkX19DlHajtMD2TvJlIZaMTPU0qavy2lVKjxw=",email:'wejd.daghfous@esprit.tn',address:'13 rue de monastir, sidi achour', code_postal:'8000', city:'nabeul', country:'tunisia',flag:1});
-//});
 /**
  * Get port from environment and store in Express.
  */
@@ -40,30 +41,7 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 
-/*var io=require('socket.io').listen(server);
-var clients=[]
 
-io.sockets.on('connection',function(socket){
-  console.log('Un clisnt est connecte',socket.id)
-  clients.push(socket);
-  socket.on('data', function (data) {
-        console.log(data.toString());
-  });
-  
-  socket.on('disconnect',function(){
-    var index = clients.indexOf(socket);
-    if(index != -1 ){
-	clients.splice(index,1);
-        console.log('client disconnected');
-     }
-
-
-  })
-
-})
-
-*/
-var serverUrl = 'https://voiceconnect.ovh/ask'
 var reqhttp = require('request')
 var NetKeepAlive = require('net-keepalive')
 
@@ -78,29 +56,68 @@ require('net').createServer(function(socket) {
 
 
     socket.on('data', function(data) {
-        socket.name = data.toString();
-        console.log('is this socket is selected previously ', lastSelectedClient.indexOf(socket.name))
-        if (lastSelectedClient.indexOf(socket.name) < 0) {
+
+
+
+
+
+        console.log('is this socket is selected previously ', lastSelectedClient.indexOf(data.toString()))
+        if (lastSelectedClient.indexOf(data.toString()) < 0) {
             socket.linked = false
-            reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: socket.name } }, function(result) {
+            socket.id = shortid.generate()
+
+            reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: data.toString() } }, function(result) {
                 console.log('###########updateSpeakerByNumSerie to false')
             })
-            clients.push(socket);
+
             console.log('+++++++++connected device NAme', data.toString())
-            socket.write('connected to server')
+            sock = {
+                'selected': false,
+                'num_serie': data.toString(),
+                'socket': socket.id
+            }
+
+            sockService.addsocket(sock, function(scocketAdded) {
+                if (scocketAdded == false) {
+                    return socket.destroy()
+                }
+                console.log('scocketAdded')
+                socket.name = data.toString();
+                clients.push(socket);
+                socket.write('connected to server')
+            })
+
 
         } else {
             lastSelectedClient.forEach(function(element) {
-                if (socket.name == element) {
+                if (data.toString() == element) {
                     socket.linked = true
+                    socket.id = shortid.generate()
                     console.log('already selected socket reconnected')
-                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: true, num_serie: socket.name } }, function(result) {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: true, num_serie: data.toString() } }, function(result) {
                         console.log('###########updateSpeakerByNumSerie to true')
 
                     })
-                    clients.push(socket);
+
                     console.log('+++++++++connected device NAme', data.toString())
-                    socket.write('connected to server')
+                    sock = {
+                        'selected': true,
+                        'num_serie': data.toString(),
+                        'socket': socket.id
+                    }
+
+                    sockService.addsocket(sock, function(scocketAdded) {
+                        if (scocketAdded == false) {
+                            return socket.destroy()
+                        }
+                        console.log('scocketAdded')
+
+                        socket.name = data.toString();
+                        clients.push(socket);
+                        socket.write('connected to server')
+                    })
+
+
                 }
             })
         }
@@ -118,6 +135,9 @@ require('net').createServer(function(socket) {
             if (index != -1) {
                 clients.splice(index, 1);
                 console.log('--------client close', socket.name);
+                sockService.deletesocketByNumSerie(socket.name, function(deleted) {
+                    console.log(deleted)
+                })
                 reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: socket.name } }, function(result) {
                     console.log('###########updateSpeakerByNumSerie')
                 })
@@ -130,6 +150,9 @@ require('net').createServer(function(socket) {
         var index = clients.indexOf(socket);
         if (index != -1) {
             clients.splice(index, 1);
+            sockService.deletesocketByNumSerie(socket.name, function(deleted) {
+                console.log(deleted)
+            })
             reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: socket.name } }, function(result) {
                 console.log('###########updateSpeakerByNumSerie')
             })
@@ -138,20 +161,33 @@ require('net').createServer(function(socket) {
     });
 
     var sendSocketToSpeaker = function(name, action, callback) {
-        console.log('###########send', action, ' to ', name)
-        if (clients.length == 0) {
 
-            callback(false)
-        }
 
+
+        i = 0
+        j = 0
         clients.forEach(function(client) {
-
+            i++
             if (client.name == name) {
-
+                j++
+                console.log('###########send', action, ' to ', name)
                 callback(client.write(action))
             }
+            console.log(clients.length)
+            console.log(clients.length == i)
+            if (i == clients.length) {
+                if (j == 0) {
+                    console.log('not sent to speaker due to eroor ')
+                    callback(false)
+                }
+            }
+
+
 
         })
+
+
+
 
     }
 
