@@ -16,7 +16,7 @@ var req = require('request');
 var cookie = require("cookie");
 var sessionStorage = require('express-mysql-session');
 var config = require('./config/dbconfig.json');
-require('./config/passport')(passport);
+//require('./config/passport')(passport);
 //var flash    = require('connect-flash');
 
 /**
@@ -60,9 +60,9 @@ app.use(session({ secret: 'a4f8071f-c873-4447-8ee2', name: 'nsIdForsession', sav
  */
 
 
-app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
-app.use(flash()); // use connect-flash for flash messages stored in session
+//app.use(passport.initialize());
+//app.use(passport.session()); // persistent login sessions
+//app.use(flash()); // use connect-flash for flash messages stored in session
 app.use(function(req, res, next) {
 
 
