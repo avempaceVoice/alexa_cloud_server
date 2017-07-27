@@ -1,16 +1,14 @@
 {
 
-  "App": {
-    "dbConfig": {
-      "base": "node",
-      "user": "postgres",
-      "password": "postgres",
-      "host": "localhost"
+    "App": {
+        "dbConfig": {
+            "base": "node",
+            "user": "postgres",
+            "password": "",
+            "host": "localhost"
 
+
+        }
 
     }
-
-  }
 }
-
-
