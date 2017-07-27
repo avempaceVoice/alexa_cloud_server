@@ -1,7 +1,7 @@
 {
 
     "App": {
-        "conString": "postgres://postgres@localhost:5432/node",
+        "conString": "postgres://postgres:postgres@localhost:5432/node",
         "dbConfig": {
             "base": "node",
             "user": "postgres",
