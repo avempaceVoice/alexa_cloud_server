@@ -7,15 +7,15 @@ dbConfig = require('../config/dbconfig.json');
  * postgres we have to add the connection string to the sequelize instance
  * @type {Sequelize}
  */
-var sequelize = new Sequelize(dbConfig.App.dbConfig.base,dbConfig.App.dbConfig.user,dbConfig.App.dbConfig.password);
+var sequelize = new Sequelize(dbConfig.App.dbConfig.base, dbConfig.App.dbConfig.user, dbConfig.App.dbConfig.password);
 
 /**
  * type all  the table name (models) to have access on it after
  * @type {string[]}
  */
 var models = [
-    'lock',
-    
+    'socket',
+
 ];
 /**
  * import model configuration
@@ -32,7 +32,7 @@ models.forEach(function(model) {
  * belongstoMany for many to many relation
  */
 (function(m) {
-  /*  m.room.belongsTo(m.lock);
+    /*  m.room.belongsTo(m.lock);
     m.roomuseraffectation.belongsTo(m.room);
     m.roomuseraffectation.belongsTo(m.user);
     m.usertokenaffectation.belongsTo(m.user);
