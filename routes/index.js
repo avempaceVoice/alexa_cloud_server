@@ -7,7 +7,10 @@ var fn = require('../bin/www')
 var io = require('socket.io');
 var reqhttp = require('request')
 var serverUrl = 'https://voiceconnect.ovh/ask'
-    /* GET home page. */
+
+var sockService = require('../services/socketservice')
+
+/* GET home page. */
 
 /* GET home page. */
 router.get('/', securityCheck, function(req, res, next) {
