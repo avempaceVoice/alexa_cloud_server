@@ -1,13 +1,13 @@
 var Sequelize = require('sequelize');
 dbConfig = require('../config/dbconfig.json');
 
-
+var conString = dbConfig.App.conString;
 /**
  * to establish connection between  the server and the dataabase in this case
  * postgres we have to add the connection string to the sequelize instance
  * @type {Sequelize}
  */
-var sequelize = new Sequelize(dbConfig.App.dbConfig.base, dbConfig.App.dbConfig.user, dbConfig.App.dbConfig.password);
+var sequelize = new Sequelize(conString);
 
 /**
  * type all  the table name (models) to have access on it after
