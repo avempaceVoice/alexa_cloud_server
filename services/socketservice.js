@@ -149,7 +149,7 @@ var getsocketById = function(idsocket, cb) {
  */
 var getsocketByNumSerie = function(idsocket, nameSocket, cb) {
 
-    models.socket.findOne({ where: { num_serie: idsocket } }).then(function(socketfound) {
+    models.socket.findOne({ where: { num_serie: idsocket.toString() } }).then(function(socketfound) {
 
         console.log('socketfound', socketfound)
         if (socketfound) {
