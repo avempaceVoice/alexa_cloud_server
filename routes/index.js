@@ -32,6 +32,7 @@ router.get('/getAllSocketConnected', function(req, res, next) {
 
 router.post('/getsocketByNumSerie', function(req, res, next) {
     console.log('req.body.name ', req.body.name)
+    console.log('req.body.key ', req.body.key)
     sockService.getsocketByNumSerie(req.body.key, req.body.name, function(socket) {
         if (socket != false) {
             console.log('socket.socket.length ' + socket.socket.length)
