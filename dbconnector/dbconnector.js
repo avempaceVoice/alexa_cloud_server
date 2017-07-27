@@ -1,4 +1,4 @@
-var mysql = require('mysql'),
+/* var mysql = require('mysql'),
     dbConfig = require('../config/dbconfig.json');
     db = null;
 
@@ -14,3 +14,4 @@ module.exports = function () {
     };
     return db;
 };
+ */
