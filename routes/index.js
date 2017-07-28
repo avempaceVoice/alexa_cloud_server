@@ -595,7 +595,7 @@ router.post('/pause', securityCheck, function(req, res, next) {
 
             if (soc.linked == true) {
 
-                fn.sendSocketToSpeaker(soc.name, 'pause_toggle', function(result) {
+                fn.sendSocketToSpeaker(soc.name, 'pause', function(result) {
                     if (result != false) {
                         res.send({ status: 'ok' })
                     } else {
@@ -614,7 +614,7 @@ router.post('/pause', securityCheck, function(req, res, next) {
         if (fn.clients.length == 0) {
             res.send({ status: 'no' })
         } else {
-            fn.sendSocketToSpeaker(req.body.key, 'pause_toggle', function(result) {
+            fn.sendSocketToSpeaker(req.body.key, 'pause', function(result) {
                 if (result != false) {
                     res.send({ status: 'ok' })
                 } else {
