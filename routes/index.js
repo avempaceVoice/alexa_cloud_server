@@ -633,6 +633,54 @@ router.post('/pause', securityCheck, function(req, res, next) {
 
 })
 
+router.post('/stop', securityCheck, function(req, res, next) {
+    console.log('req.body.key', req.body.key)
+    if (!req.body.key) {
+
+
+        fn.clients.forEach(function(soc) {
+
+
+            if (soc.linked == true) {
+
+                fn.sendSocketToSpeaker(soc.name, 'stop', function(result) {
+                    if (result != false) {
+                        res.send({ status: 'ok' })
+                    } else {
+                        res.send({ status: 'no' })
+                    }
+
+
+                })
+
+            }
+
+        })
+        res.send({ status: 'no' })
+
+    } else {
+        if (fn.clients.length == 0) {
+            res.send({ status: 'no' })
+        } else {
+            fn.sendSocketToSpeaker(req.body.key, 'stop', function(result) {
+                if (result != false) {
+                    res.send({ status: 'ok' })
+                } else {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
+                        console.log(result)
+                    })
+                    res.send({ status: 'no' })
+                }
+
+
+            })
+        }
+
+    }
+
+
+})
+
 
 
 router.post('/whatisplaying', securityCheck, function(req, res, next) {
