@@ -1,3 +1,8 @@
+/**
+ * 
+ * Copyright (c) 2017, Avempace Wireless (Daghfous Wejd). All rights reserved.
+ * 
+ */
 module.exports = function(sequelize, DataTypes) {
     var socket = sequelize.define("sockets", {
         id: {

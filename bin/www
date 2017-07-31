@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 
 /**
+ * 
+ * Copyright (c) 2017, Avempace Wireless (Daghfous Wejd). All rights reserved.
+ * 
+ */
+/**
  * Module dependencies.
  */
 
@@ -16,7 +21,7 @@ var serverUrl = 'https://voiceconnect.ovh/ask'
 
 models.sequelize.sync({ force: true }).then(function() { // in case we need to reload database config
     //models.sequelize.sync().then(function () {
-    console.log('tables created');
+
 });
 
 /**
@@ -47,8 +52,11 @@ var NetKeepAlive = require('net-keepalive')
 
 var clients = []
 var lastSelectedClient = []
+    /**
+     * this is the socket server listening on port 7070
+     */
 require('net').createServer(function(socket) {
-    console.log("+++++++++++connected");
+
 
     socket.setKeepAlive(true, 10000)
     NetKeepAlive.setKeepAliveInterval(socket, 4000)
@@ -61,16 +69,16 @@ require('net').createServer(function(socket) {
 
 
 
-        console.log('is this socket is selected previously ', lastSelectedClient.indexOf(data.toString()))
+
         if (lastSelectedClient.indexOf(data.toString()) < 0) {
             socket.linked = false
             socket.id = shortid.generate()
 
             reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: data.toString() } }, function(result) {
-                console.log('###########updateSpeakerByNumSerie to false')
+
             })
 
-            console.log('+++++++++connected device NAme', data.toString())
+
             sock = {
                 'selected': false,
                 'num_serie': data.toString(),
@@ -81,7 +89,7 @@ require('net').createServer(function(socket) {
                 if (scocketAdded == false) {
                     return socket.destroy()
                 }
-                console.log('scocketAdded')
+
                 socket.name = data.toString();
                 clients.push(socket);
                 socket.write('connected to server')
@@ -93,13 +101,13 @@ require('net').createServer(function(socket) {
                 if (data.toString() == element) {
                     socket.linked = true
                     socket.id = shortid.generate()
-                    console.log('already selected socket reconnected')
+
                     reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: true, num_serie: data.toString() } }, function(result) {
-                        console.log('###########updateSpeakerByNumSerie to true')
+
 
                     })
 
-                    console.log('+++++++++connected device NAme', data.toString())
+
                     sock = {
                         'selected': true,
                         'num_serie': data.toString(),
@@ -110,7 +118,7 @@ require('net').createServer(function(socket) {
                         if (scocketAdded == false) {
                             return socket.destroy()
                         }
-                        console.log('scocketAdded')
+
 
                         socket.name = data.toString();
                         clients.push(socket);
@@ -134,12 +142,12 @@ require('net').createServer(function(socket) {
             var index = clients.indexOf(socket);
             if (index != -1) {
                 clients.splice(index, 1);
-                console.log('--------client close', socket.name);
+
                 sockService.deletesocketByNumSerie(socket.name, function(deleted) {
-                    console.log(deleted)
+
                 })
                 reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: socket.name } }, function(result) {
-                    console.log('###########updateSpeakerByNumSerie')
+
                 })
             }
 
@@ -151,12 +159,12 @@ require('net').createServer(function(socket) {
         if (index != -1) {
             clients.splice(index, 1);
             sockService.deletesocketByNumSerie(socket.name, function(deleted) {
-                console.log(deleted)
+
             })
             reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: socket.name } }, function(result) {
-                console.log('###########updateSpeakerByNumSerie')
+
             })
-            console.log('--------client close', socket.name);
+
         }
     });
 
@@ -170,14 +178,14 @@ require('net').createServer(function(socket) {
             i++
             if (client.name == name) {
                 j++
-                console.log('###########send', action, ' to ', name)
+
                 callback(client.write(action))
             }
-            console.log(clients.length)
-            console.log(clients.length == i)
+
+
             if (i == clients.length) {
                 if (j == 0) {
-                    console.log('not sent to speaker due to eroor ')
+
                     callback(false)
                 }
             }
@@ -197,7 +205,7 @@ require('net').createServer(function(socket) {
 
 }).listen(7070, function() {
 
-    console.log('listen on port 7070')
+
 });
 
 
@@ -260,7 +268,7 @@ function onError(error) {
 
 function onListening() {
     var addr = server.address();
-    console.log('server http listening on 5151')
+
     var bind = typeof addr === 'string' ?
         'pipe ' + addr :
         'port ' + addr.port;

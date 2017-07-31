@@ -1,4 +1,9 @@
 var models = require('./../models');
+/**
+ * 
+ * Copyright (c) 2017, Avempace Wireless (Daghfous Wejd). All rights reserved.
+ * 
+ */
 var config = require('./../config/dbconfig.json');
 
 
@@ -27,7 +32,7 @@ var addsocket = function(socket, cb) {
 
 
     }).catch(function(err) {
-        console.log(err)
+
         return cb(false)
     });
 
@@ -45,7 +50,7 @@ var deletesocket = function(idsocket, cb) {
 
         cb(socket.destroy());
     }).catch(function(err) {
-        console.log(err)
+
         return cb(false)
     });;
 };
@@ -55,7 +60,7 @@ var deletesocket = function(idsocket, cb) {
  * @param socket
  */
 var updatesocket = function(idsocket, socket, cb) {
-    console.log(idsocket)
+
     models.socket.findOne({
         where: {
             id: idsocket
@@ -67,7 +72,7 @@ var updatesocket = function(idsocket, socket, cb) {
             cb(socketAfterUpdate.dataValues)
         })
     }).catch(function(err) {
-        console.log(err)
+
         return cb(false)
     });;
 
@@ -80,7 +85,7 @@ var updatesocket = function(idsocket, socket, cb) {
  * @param cb
  */
 var getAllsocket = function(cb) {
-    console.log('Outside pg connect')
+
     pg.connect(conString, function(err, dbclient, ok) {
 
         if (err) {
@@ -90,7 +95,8 @@ var getAllsocket = function(cb) {
 
         dbclient.query("SELECT * FROM sockets ", function(err, rows) {
             if (err) {
-                console.log('erruer', err)
+                return cb(false)
+
             }
 
             return cb(rows.rows);
@@ -108,7 +114,7 @@ var findsocketByOwner = function(userId, callback) {
 
 
 
-    console.log('Outside pg connect')
+
     pg.connect(conString, function(err, dbclient, ok) {
 
         if (err) {
@@ -118,7 +124,7 @@ var findsocketByOwner = function(userId, callback) {
 
         dbclient.query('SELECT * FROM sockets where "userId" = $1', [userId], function(err, rows) {
             if (err) {
-                console.log('erruer', err)
+                return cb(false)
             }
 
             return callback(rows.rows);
@@ -151,10 +157,10 @@ var getsocketByNumSerie = function(idsocket, nameSocket, cb) {
 
     models.socket.findOne({ where: { num_serie: idsocket.toString() } }).then(function(socketfound) {
 
-        console.log('socketfound', socketfound)
+
         if (socketfound) {
-            console.log('naeSoclet ', nameSocket)
-            console.log('socketfound.dataValues ', socketfound.dataValues)
+
+
             socketfound.dataValues.name = nameSocket
             return cb(socketfound.dataValues);
         } else {
@@ -187,7 +193,7 @@ var updatesocketByNumSerie = function(numeSerie, val, cb) {
         }
 
     }).catch(function(err) {
-        console.log(err)
+
         return cb(false)
     });;
 
@@ -204,7 +210,7 @@ var deletesocketByNumSerie = function(numSerie, cb) {
 
         cb(socket.destroy());
     }).catch(function(err) {
-        console.log(err)
+
         return cb(false)
     });;
 };

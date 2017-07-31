@@ -1,3 +1,8 @@
+/**
+ * 
+ * Copyright (c) 2017, Avempace Wireless (Daghfous Wejd). All rights reserved.
+ * 
+ */
 var express = require('express');
 var router = express.Router();
 

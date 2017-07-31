@@ -1,3 +1,8 @@
+/**
+ * 
+ * Copyright (c) 2017, Avempace Wireless (Daghfous Wejd). All rights reserved.
+ * 
+ */
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
@@ -24,18 +29,18 @@ router.get('/', securityCheck, function(req, res, next) {
 });
 
 router.get('/getAllSocketConnected', function(req, res, next) {
-    console.log('getAllSocketConnected')
+
     sockService.getAllsocket(function(listSocket) {
         res.send(listSocket)
     })
 })
 
 router.post('/getsocketByNumSerie', function(req, res, next) {
-    console.log('req.body.name ', req.body.name)
-    console.log('req.body.key ', req.body.key)
+
+
     sockService.getsocketByNumSerie(req.body.key, req.body.name, function(socket) {
         if (socket != false) {
-            console.log('socket.socket.length ' + socket.socket.length)
+
             if (socket.socket.length != 0) {
                 res.send(socket)
             } else {
@@ -51,12 +56,12 @@ router.post('/getsocketByNumSerie', function(req, res, next) {
 router.post('/unlinkspeaker', function(req, res, next) {
     fn.clients.forEach(function(soc) {
         if (soc.name == req.body.key) {
-            console.log('unlink socket', soc.name)
+
             reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: soc.name } }, function(result) {
-                console.log(result)
+
             })
             sockService.updatesocketByNumSerie(soc.name, false, function(updatedSocked) {
-                console.log('update sockert')
+
             })
             soc.linked = false
             var index = fn.lastSelectedClient.indexOf(soc.name)
@@ -73,8 +78,8 @@ router.post('/unlinkspeaker', function(req, res, next) {
 })
 
 router.post('/', securityCheck, function(req, res, next) {
-    console.log('speaker to link ', req.body.key)
-    console.log('length of table socket  ', fn.clients.length)
+
+
     ctr = 0
     i = 0
     if (fn.clients.length == 0) {
@@ -82,12 +87,12 @@ router.post('/', securityCheck, function(req, res, next) {
     } else {
         fn.clients.forEach(function(soc) {
             if (soc.name == req.body.key) {
-                console.log('theire is a socket named as requested', soc.name)
+
                 reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: true, num_serie: soc.name } }, function(result) {
-                    console.log(result)
+
                 })
                 sockService.updatesocketByNumSerie(soc.name, true, function(updatedSocked) {
-                    console.log('update sockert', updatedSocked)
+
                 })
                 soc.linked = true
                 fn.lastSelectedClient.push(soc.name)
@@ -178,15 +183,15 @@ router.get('/getConnectedDevice', securityCheck, function(req, res, next) {
 })
 
 router.post('/linktoanyone', securityCheck, function(req, res, next) {
-    console.log('inside link to any one');
-    console.log(req.body.key)
-    console.log(fn.clients.length)
+
+
+
 
     if (fn.clients.length == 0) {
-        console.log('inside if pas de client')
+
         res.send('error')
     } else {
-        console.log('inside if theire is a client')
+
 
         fn.clients[0].linked = true
         res.send(fn.clients[0].name)
@@ -198,10 +203,10 @@ router.post('/linktoanyone', securityCheck, function(req, res, next) {
 })
 
 router.post('/playnext', securityCheck, function(req, res, next) {
-    console.log('req.body.key', req.body.key)
+
 
     if (req.body.key.length == 0) {
-        console.log('iside if section play next function ', req.body.key)
+
 
         fn.clients.forEach(function(soc) { // browse all speaker connected
 
@@ -240,7 +245,7 @@ router.post('/playnext', securityCheck, function(req, res, next) {
 
     } else {
         if (fn.clients.length == 0) {
-            console.log('iside else if section play next function ', req.body.key)
+
             res.send({ status: 'no' })
             res.end()
         } else {
@@ -248,17 +253,17 @@ router.post('/playnext', securityCheck, function(req, res, next) {
 
 
             fn.sendSocketToSpeaker(req.body.key, 'play_next', function(result) {
-                console.log('result after try to send play next ', result)
+
                 if (result != false) {
 
                     res.send({ status: 'ok' })
                     res.end()
                 } else {
                     reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
-                        console.log(result)
+
                     })
                     reqhttp.post(serverUrl + '/getSpeakerByNumSerie', { form: { num_serie: req.body.key } }, function(result) {
-                        console.log("----------------------------------------- " + result)
+
                         res.send({ status: 'no' })
                         res.end()
                     })
@@ -277,7 +282,7 @@ router.post('/playnext', securityCheck, function(req, res, next) {
 })
 
 router.post('/playprevious', securityCheck, function(req, res, next) {
-    console.log('req.body.key', req.body.key)
+
     if (!req.body.key) {
 
 
@@ -287,7 +292,7 @@ router.post('/playprevious', securityCheck, function(req, res, next) {
             if (soc.linked == true) {
 
                 fn.sendSocketToSpeaker(soc.name, 'play_prev', function(result) {
-                    console.log(result)
+
                     if (result != false) {
                         res.send({ status: 'ok' })
                         res.end()
@@ -310,12 +315,12 @@ router.post('/playprevious', securityCheck, function(req, res, next) {
             res.send({ status: 'no' })
         } else {
             fn.sendSocketToSpeaker(req.body.key, 'play_prev', function(result) {
-                console.log(result)
+
                 if (result != false) {
                     res.send({ status: 'ok' })
                 } else {
                     reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
-                        console.log(result)
+
                     })
                     res.send({ status: 'no' })
                 }
@@ -330,7 +335,7 @@ router.post('/playprevious', securityCheck, function(req, res, next) {
 })
 
 router.post('/playtrack', securityCheck, function(req, res, next) {
-    console.log('req.body.key', req.body.key)
+
     if (!req.body.key) {
 
 
@@ -362,7 +367,7 @@ router.post('/playtrack', securityCheck, function(req, res, next) {
                     res.send({ status: 'ok' })
                 } else {
                     reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
-                        console.log(result)
+
                     })
                     res.send({ status: 'no' })
                 }
@@ -378,7 +383,7 @@ router.post('/playtrack', securityCheck, function(req, res, next) {
 })
 
 router.post('/increasevolume', securityCheck, function(req, res, next) {
-    console.log('req.body.key', req.body.key)
+
     valtoIncrease = req.body.nb
     if (!req.body.key) {
 
@@ -412,7 +417,7 @@ router.post('/increasevolume', securityCheck, function(req, res, next) {
                     res.send({ status: 'ok' })
                 } else {
                     reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
-                        console.log(result)
+
                     })
                     res.send({ status: 'no' })
                 }
@@ -465,12 +470,12 @@ router.post('/incrvolume', securityCheck, function(req, res, next) {
                 res.send({ status: 'no' })
             } else {
                 fn.sendSocketToSpeaker(req.body.key, 'volume_increase', function(err, result) {
-                    console.log(err)
+
                     if (result != false) {
                         res.send({ status: 'ok' })
                     } else {
                         reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
-                            console.log(result)
+
                         })
                         res.send({ status: 'no' })
                     }
@@ -489,7 +494,7 @@ router.post('/incrvolume', securityCheck, function(req, res, next) {
 
 router.post('/decreasevolume', securityCheck, function(req, res, next) {
     valtoDecrease = req.body.nb
-    console.log('req.body.key', req.body.key)
+
     if (!req.body.key) {
 
 
@@ -521,7 +526,7 @@ router.post('/decreasevolume', securityCheck, function(req, res, next) {
                     res.send({ status: 'ok' })
                 } else {
                     reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
-                        console.log(result)
+
                     })
                     res.send({ status: 'no' })
                 }
@@ -538,7 +543,7 @@ router.post('/decreasevolume', securityCheck, function(req, res, next) {
 
 router.post('/decrevolume', securityCheck, function(req, res, next) {
 
-    console.log('req.body.key', req.body.key)
+
     if (!req.body.key) {
 
 
@@ -570,7 +575,7 @@ router.post('/decrevolume', securityCheck, function(req, res, next) {
                     res.send({ status: 'ok' })
                 } else {
                     reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
-                        console.log(result)
+
                     })
                     res.send({ status: 'no' })
                 }
@@ -586,7 +591,7 @@ router.post('/decrevolume', securityCheck, function(req, res, next) {
 
 
 router.post('/pause', securityCheck, function(req, res, next) {
-    console.log('req.body.key', req.body.key)
+
     if (!req.body.key) {
 
 
@@ -619,7 +624,7 @@ router.post('/pause', securityCheck, function(req, res, next) {
                     res.send({ status: 'ok' })
                 } else {
                     reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
-                        console.log(result)
+
                     })
                     res.send({ status: 'no' })
                 }
@@ -634,7 +639,7 @@ router.post('/pause', securityCheck, function(req, res, next) {
 })
 
 router.post('/stop', securityCheck, function(req, res, next) {
-    console.log('req.body.key', req.body.key)
+
     if (!req.body.key) {
 
 
@@ -667,7 +672,7 @@ router.post('/stop', securityCheck, function(req, res, next) {
                     res.send({ status: 'ok' })
                 } else {
                     reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
-                        console.log(result)
+
                     })
                     res.send({ status: 'no' })
                 }
@@ -684,47 +689,9 @@ router.post('/stop', securityCheck, function(req, res, next) {
 
 
 router.post('/whatisplaying', securityCheck, function(req, res, next) {
-    console.log('req.body.key', req.body.key)
+
     res.send('hello by mariah carrey')
-        /*  if (!req.body.key) {
 
-
-              fn.clients.forEach(function(soc) {
-
-
-                  if (soc.linked == true) {
-
-                      fn.sendSocketToSpeaker(soc.name, 'whatisplaying', function(result) {
-                          if (result != false) {
-                              res.send(result)
-                          } else {
-                              res.send('nothing')
-                          }
-
-
-                      })
-
-                  }
-
-              })
-              res.send({ status: 'no' })
-
-          } else {
-              if (fn.clients.length == 0) {
-                  res.send({ status: 'no' })
-              } else {
-                  fn.sendSocketToSpeaker(req.body.key, 'whatisplaying', function(result) {
-                      if (result != false) {
-                          res.send(result)
-                      } else {
-                          res.send('nothing')
-                      }
-
-
-                  })
-              }
-
-          }*/
 
 
 })
@@ -738,7 +705,7 @@ function securityCheck(req, response, next) {
 
 
     if (fullUrl == 'http://www.baidu.com/cache/global/img/gs.gif' || fullUrl == 'http://www.baidu.comhttp://www.baidu.com/cache/global/img/gs.gif') {
-        console.log('intrusion try')
+
         response.end()
     } else {
         next()

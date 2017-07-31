@@ -1,3 +1,8 @@
+/**
+ * 
+ * Copyright (c) 2017, Avempace Wireless (Daghfous Wejd). All rights reserved.
+ * 
+ */
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -79,13 +84,13 @@ app.use('/users', users);
 
 app.use(function(req, res, next) {
 
-    console.log('verifying identity')
+
     var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-    console.log(fullUrl)
+
 
     if (fullUrl == 'http://www.baidu.com/cache/global/img/gs.gif' || fullUrl == 'http://www.baidu.comhttp://www.baidu.com/cache/global/img/gs.gif') {
 
-        console.log('intrusion try')
+
         res.end()
     } else {
         next()
@@ -111,7 +116,7 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
-        console.log('error log ', err)
+
         res.status(err.status || 500);
 
         res.locals.user = null;

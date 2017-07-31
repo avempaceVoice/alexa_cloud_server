@@ -1,3 +1,8 @@
+/**
+ * 
+ * Copyright (c) 2017, Avempace Wireless (Daghfous Wejd). All rights reserved.
+ * 
+ */
 var Sequelize = require('sequelize');
 dbConfig = require('../config/dbconfig.json');
 
@@ -32,35 +37,7 @@ models.forEach(function(model) {
  * belongstoMany for many to many relation
  */
 (function(m) {
-    /*  m.room.belongsTo(m.lock);
-    m.roomuseraffectation.belongsTo(m.room);
-    m.roomuseraffectation.belongsTo(m.user);
-    m.usertokenaffectation.belongsTo(m.user);
-    m.usertokenaffectation.belongsTo(m.token);
-    m.locktokenaffectation.belongsTo(m.token);
-    m.locktokenaffectation.belongsTo(m.lock);
 
-
-    m.programmateur.belongsTo(m.user);
-    m.hall.belongsTo(m.residence);
-    m.garage.hasMany(m.equipement);
-    m.hall.hasMany(m.equipement);
-    m.centrale.belongsTo(m.residence);
-    m.centrale.hasMany(m.evenement);
-    m.appartement.belongsTo(m.user);
-    m.user.hasMany(m.reclamation);
-    m.notification.belongsTo(m.user);
-    m.garage.belongsTo(m.residence);
-    m.equipement.belongsTo(m.centrale);
-    m.badge.belongsTo(m.user);
-    m.residence.belongsTo(m.user);
-    m.droitAcces.belongsToMany(m.badge, { through: 'droitAccesBadges' });
-    m.droitAcces.belongsTo(m.residence);
-    m.droitAcces.belongsToMany(m.equipement, { through: 'droitAccesEquipement' } );
-    m.equipement.belongsTo(m.equipementSystem);
-
-
-*/
 })(module.exports);
 
 /**
