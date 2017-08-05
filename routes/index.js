@@ -259,7 +259,7 @@ router.post('/playnext', securityCheck, function(req, res, next) {
                     res.send({ status: 'ok' })
                     res.end()
                 } else {
-                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.id } }, function(result) {
 
                     })
                     reqhttp.post(serverUrl + '/getSpeakerByNumSerie', { form: { num_serie: req.body.key } }, function(result) {
@@ -319,7 +319,7 @@ router.post('/playprevious', securityCheck, function(req, res, next) {
                 if (result != false) {
                     res.send({ status: 'ok' })
                 } else {
-                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.id } }, function(result) {
 
                     })
                     res.send({ status: 'no' })
