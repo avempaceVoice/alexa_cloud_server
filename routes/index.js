@@ -57,7 +57,7 @@ router.post('/unlinkspeaker', function(req, res, next) {
     fn.clients.forEach(function(soc) {
         if (soc.name == req.body.key) {
 
-            reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.id } }, function(result) {
+            reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
 
             })
             sockService.updatesocketByNumSerie(soc.name, false, function(updatedSocked) {
@@ -88,7 +88,7 @@ router.post('/', securityCheck, function(req, res, next) {
         fn.clients.forEach(function(soc) {
             if (soc.name == req.body.key) {
 
-                reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: true, num_serie: req.body.id } }, function(result) {
+                reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: true, num_serie: req.body.key } }, function(result) {
 
                 })
                 sockService.updatesocketByNumSerie(soc.name, true, function(updatedSocked) {
@@ -259,7 +259,7 @@ router.post('/playnext', securityCheck, function(req, res, next) {
                     res.send({ status: 'ok' })
                     res.end()
                 } else {
-                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.id } }, function(result) {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
 
                     })
                     reqhttp.post(serverUrl + '/getSpeakerByNumSerie', { form: { num_serie: req.body.key } }, function(result) {
@@ -319,7 +319,7 @@ router.post('/playprevious', securityCheck, function(req, res, next) {
                 if (result != false) {
                     res.send({ status: 'ok' })
                 } else {
-                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.id } }, function(result) {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
 
                     })
                     res.send({ status: 'no' })
@@ -366,7 +366,7 @@ router.post('/playtrack', securityCheck, function(req, res, next) {
                 if (result != false) {
                     res.send({ status: 'ok' })
                 } else {
-                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.id } }, function(result) {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
 
                     })
                     res.send({ status: 'no' })
@@ -416,7 +416,7 @@ router.post('/increasevolume', securityCheck, function(req, res, next) {
                 if (result != false) {
                     res.send({ status: 'ok' })
                 } else {
-                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.id } }, function(result) {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
 
                     })
                     res.send({ status: 'no' })
@@ -474,7 +474,7 @@ router.post('/incrvolume', securityCheck, function(req, res, next) {
                     if (result != false) {
                         res.send({ status: 'ok' })
                     } else {
-                        reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.id } }, function(result) {
+                        reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
 
                         })
                         res.send({ status: 'no' })
@@ -525,7 +525,7 @@ router.post('/decreasevolume', securityCheck, function(req, res, next) {
                 if (result != false) {
                     res.send({ status: 'ok' })
                 } else {
-                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.id } }, function(result) {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
 
                     })
                     res.send({ status: 'no' })
@@ -574,7 +574,7 @@ router.post('/decrevolume', securityCheck, function(req, res, next) {
                 if (result != false) {
                     res.send({ status: 'ok' })
                 } else {
-                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.id } }, function(result) {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
 
                     })
                     res.send({ status: 'no' })
@@ -623,7 +623,7 @@ router.post('/pause', securityCheck, function(req, res, next) {
                 if (result != false) {
                     res.send({ status: 'ok' })
                 } else {
-                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.id } }, function(result) {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
 
                     })
                     res.send({ status: 'no' })
@@ -671,7 +671,7 @@ router.post('/stop', securityCheck, function(req, res, next) {
                 if (result != false) {
                     res.send({ status: 'ok' })
                 } else {
-                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.id } }, function(result) {
+                    reqhttp.post(serverUrl + '/updateSpeakerByNumSerie', { form: { linked: false, num_serie: req.body.key } }, function(result) {
 
                     })
                     res.send({ status: 'no' })
