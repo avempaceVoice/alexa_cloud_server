@@ -1,7 +1,7 @@
 {
 
     "App": {
-        "conString": "postgres://postgres:postgres@localhost:5432/node",
+        "conString": "postgres://postgres:postgres@localhost:5432/alexa",
         "dbConfig": {
             "base": "node",
             "user": "postgres",
