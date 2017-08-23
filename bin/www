@@ -60,7 +60,7 @@ require('net').createServer(function(socket) {
 
     socket.setKeepAlive(true, 10000)
     NetKeepAlive.setKeepAliveInterval(socket, 4000)
-    NetKeepAlive.setKeepAliveProbes(socket, 1)
+    NetKeepAlive.setKeepAliveProbes(socket, 5)
 
 
     socket.on('data', function(data) {
