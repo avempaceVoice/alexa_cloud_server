@@ -19,11 +19,11 @@ var shortid = require('shortid');
 
 var serverUrl = 'https://voiceconnect.ovh/ask'
 
-models.sequelize.sync({ force: true }).then(function() { // in case we need to reload database config
+/*models.sequelize.sync({ force: true }).then(function() { // in case we need to reload database config
     //models.sequelize.sync().then(function () {
 
 });
-
+*/
 /**
  * Get port from environment and store in Express.
  */
